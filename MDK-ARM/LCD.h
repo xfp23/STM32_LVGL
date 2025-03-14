@@ -84,6 +84,8 @@ typedef struct
  */
 extern void LCD_Init(LCD_Class_t * lcd);
 
+extern void Lcd_WriteData_16Bit(LCD_Class_t * lcd,uint16_t Data);
+
 extern void LCD_Reset(LCD_Class_t * lcd);
 
 extern void LCD_Fillclear(LCD_Class_t *lcd, LCD_Color_t color);

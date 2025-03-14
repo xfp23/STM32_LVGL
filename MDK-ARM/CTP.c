@@ -240,7 +240,7 @@ void CTP_mainLoop(CTP_Class_t *ctp)
     getTouchX(ctp, pointNum);
     getTouchY(ctp, pointNum);
 
-    ctp->flag.CTP_INT = OFF;
+    //ctp->flag.CTP_INT = OFF;
 }
 
 /**

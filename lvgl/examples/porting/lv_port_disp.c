@@ -19,17 +19,18 @@
  *      DEFINES
  *********************/
  
-#ifndef MY_DISP_HOR_RES
-    #warning Please define or replace the macro MY_DISP_HOR_RES with the actual screen width, default value 320 is used for now.
-    #define MY_DISP_HOR_RES    320
-#endif
+//#ifndef MY_DISP_HOR_RES
+//    #warning Please define or replace the macro MY_DISP_HOR_RES with the actual screen width, default value 320 is used for now.
+//    #define MY_DISP_HOR_RES    320
+//#endif
 
-#ifndef MY_DISP_VER_RES
-    #warning Please define or replace the macro MY_DISP_VER_RES with the actual screen height, default value 240 is used for now.
-    #define MY_DISP_VER_RES    240
-#endif
-
-#define BYTE_PER_PIXEL (LV_COLOR_FORMAT_GET_SIZE(LV_COLOR_FORMAT_RGB565)) /*will be 2 for RGB565 */
+//#ifndef MY_DISP_VER_RES
+//    #warning Please define or replace the macro MY_DISP_VER_RES with the actual screen height, default value 240 is used for now.
+//    #define MY_DISP_VER_RES    240
+//#endif
+#define MY_DISP_HOR_RES    240
+#define MY_DISP_VER_RES    320
+#define BYTE_PER_PIXEL 2 /*will be 2 for RGB565 */
 
 /**********************
  *      TYPEDEFS
@@ -40,7 +41,7 @@
  **********************/
 static void disp_init(void);
 
-static void disp_flush(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map);
+static void disp_flush(lv_display_t * disp, const lv_area_t * area, lv_color16_t * px_map);
 
 /**********************
  *  STATIC VARIABLES
@@ -65,7 +66,7 @@ void lv_port_disp_init(void)
      * Create a display and set a flush_cb
      * -----------------------------------*/
     lv_display_t * disp = lv_display_create(MY_DISP_HOR_RES, MY_DISP_VER_RES);
-    lv_display_set_flush_cb(disp, disp_flush);
+    lv_display_set_flush_cb(disp,(lv_display_flush_cb_t) disp_flush);
 
     /* Example 1
      * One buffer for partial rendering*/
@@ -122,31 +123,49 @@ void disp_disable_update(void)
     disp_flush_enabled = false;
 }
 
+/**
+* 交换字节顺序
+*/
+uint16_t reverse_and_swap_rb(uint16_t color)
+{
+    // **按位反转**
+    color = ((color & 0xAAAA) >> 1) | ((color & 0x5555) << 1);
+    color = ((color & 0xCCCC) >> 2) | ((color & 0x3333) << 2);
+    color = ((color & 0xF0F0) >> 4) | ((color & 0x0F0F) << 4);
+    color = (color >> 8) | (color << 8);
+
+    // **拆分 R、G、B 分量**
+    uint16_t r = (color & 0xF800);  // 5-bit 红色 (bit 11-15)
+    uint16_t g = (color & 0x07E0);  // 6-bit 绿色 (bit 5-10)
+    uint16_t b = (color & 0x001F);  // 5-bit 蓝色 (bit 0-4)
+
+    // **交换 R 和 B 的位置**
+    return ((b << 11) | g | (r >> 11));
+}
+
+
+
 /*Flush the content of the internal buffer the specific area on the display.
  *`px_map` contains the rendered image as raw pixel map and it should be copied to `area` on the display.
  *You can use DMA or any hardware acceleration to do this operation in the background but
  *'lv_display_flush_ready()' has to be called when it's finished.*/
-static void disp_flush(lv_display_t * disp_drv, const lv_area_t * area, uint8_t * px_map)
+static void disp_flush(lv_display_t *disp_drv, const lv_area_t *area, lv_color16_t *px_map)
 {
-    if(disp_flush_enabled) {
-        /*The most simple case (but also the slowest) to put all pixels to the screen one-by-one*/
+    int32_t x, y;
+    for (y = area->y1; y <= area->y2; y++) {
+        for (x = area->x1; x <= area->x2; x++) {
+		uint16_t color565 = (px_map->red << 11) | (px_map->green << 5) | px_map->blue;
+		LCD_Drawpoint(&LCD, x, y, color565);
 
-        int32_t x;
-        int32_t y;
-        for(y = area->y1; y <= area->y2; y++) {
-            for(x = area->x1; x <= area->x2; x++) {
-                /*Put a pixel to the display. For example:*/
-                /*put_px(x, y, *px_map)*/
-				LCD_Drawpoint(&LCD, x, y,*px_map);
-                px_map++;
-            }
+            px_map++;  // 逐像素填充
         }
     }
-
-    /*IMPORTANT!!!
-     *Inform the graphics library that you are ready with the flushing*/
-    lv_display_flush_ready(disp_drv);
+    lv_display_flush_ready(disp_drv);  // LVGL 刷新完毕
 }
+
+
+
+
 
 #else /*Enable this file at the top*/
 

@@ -6,6 +6,8 @@
 #ifndef LV_COLOR_H
 #define LV_COLOR_H
 
+#pragma anon_unions
+
 #ifdef __cplusplus
 extern "C" {
 #endif

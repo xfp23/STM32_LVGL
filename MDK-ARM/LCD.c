@@ -1,7 +1,9 @@
 #include "LCD.h"
 #include "font.h"
 #include <stdarg.h>
-#include <math.h>
+//#include <math.h>
+#include "math.h"
+#include "stdlib.h"
 void LCD_SetWindows(LCD_Class_t * lcd,uint16_t xStar, uint16_t yStar,uint16_t xEnd,uint16_t yEnd)
 {	
 	ILI93_WR_REG(&lcd->display,SET_X_ADDRESS);	
@@ -726,5 +728,4 @@ void LCD_ShowChar(LCD_Class_t *lcd, uint16_t x, uint16_t y, LCD_Color_t fc, uint
     }
     LCD_SetWindows(lcd, 0, 0, lcd->width - 1, lcd->height - 1); // 恢复窗口为全屏
 }
-
 

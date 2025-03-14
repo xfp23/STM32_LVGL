@@ -203,7 +203,15 @@ static void touchpad_read(lv_indev_t * indev_drv, lv_indev_data_t * data)
 static bool touchpad_is_pressed(void)
 {
     /*Your code comes here*/
-	return LCD.touch.flag.CTP_INT;
+	if(LCD.touch.flag.CTP_INT == ON)
+	{
+		LCD.touch.flag.CTP_INT = OFF;
+		return true;
+	}else
+	{
+	return false;
+	}
+    //LCD.touch.flag.CTP_INT;
 	
     //return false;
 }

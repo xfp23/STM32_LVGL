@@ -18,12 +18,10 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
+#include "dma.h"
 #include "i2c.h"
-#include "i2s.h"
 #include "spi.h"
 #include "tim.h"
-#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -33,7 +31,7 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+//extern void lv_example_osal(void);
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -49,36 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-LCD_Class_t LCD = {
-  .touch = {
-  .i2c.addr = 0x70,
-  .i2c.byte = NULL,
-  .i2c.buf = NULL,
-  .i2c.handle = &hi2c2,
-  .i2c.Timeout = 10,
-  .flag.DMA = 0,
-  .Hardware.RST.Pin = GPIO_PIN_10,
-  .Hardware.RST.Port = GPIOA,
-  },
-  .display = {
-  .spi.buf = NULL,
-  .spi.bytes = NULL,
-  .spi.DMA = true,
-  .spi.Timeout = 10,
-  .spi.handle = &hspi1,
-  .spi.size = 0,
-  .Hardware.CS.Pin = GPIO_PIN_9,
-  .Hardware.CS.Port = GPIOB,
-  .Hardware.LED.Pin = GPIO_PIN_6,
-  .Hardware.LED.Port = GPIOB,
-  .Hardware.RS.Pin = GPIO_PIN_7,
-  .Hardware.RS.Port = GPIOB,
-  .Hardware.RST.Pin = GPIO_PIN_8,
-  .Hardware.RST.Port = GPIOB,
-  },
-  .width = 240,
-  .height = 320,
-};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -121,25 +90,61 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_ADC1_Init();
-  MX_I2C1_Init();
-  MX_I2C2_Init();
-  MX_I2S2_Init();
+  MX_DMA_Init();
   MX_SPI1_Init();
-  MX_TIM3_Init();
-  MX_USART2_UART_Init();
   MX_TIM7_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-HAL_TIM_Base_Start_IT(&htim7);
+  HAL_TIM_Base_Start_IT(&htim7);
+  //LCD_Init(&LCD);
+//  HAL_Delay(1000);
+//  LCD_Init(&LCD);
+// LCD_ShowString(&LCD,0,0,BLUE,YELLOW,(uint8_t *)"Hello World",18,1);
 lv_init();                             // LVGL 初始化
 lv_port_disp_init();                   // 注册LVGL的显示任务
 lv_port_indev_init();                  // 注册LVGL的触屏检测任务
+// ui_init_style(&guider_ui);
+setup_ui(&guider_ui);
+ setup_scr_screen(&guider_ui);
+//lv_example_osal();
+//lv_test();
+//lv_example_chart_1();
+//lv_example_osal();
+	 static uint8_t lv_count = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+   lv_task_handler();
+	  if(UserTim.bytes.systim_1ms == ON)
+	  {
+		 UserTim.bytes.systim_1ms = OFF;
+		
+//		  if(++lv_count >= 5)
+//		  {
+		  lv_timer_handler();
+//			  lv_count = 0;
+//		  }
+	  }
+	  if(UserTim.bytes.systim_10ms == ON)
+	  {
+		  UserTim.bytes.systim_10ms = OFF;
+		   lv_timer_handler();
+		  
+		    CTP_mainLoop(&LCD.touch);
+	  }
+	  if(UserTim.bytes.systim_100ms == ON)
+	  {
+		  UserTim.bytes.systim_100ms = OFF;
+	  }
+	  if(UserTim.bytes.systim_500ms == ON)
+	  {
+//          lv_test();
+		  UserTim.bytes.systim_500ms = OFF;
+		  HAL_GPIO_TogglePin(USER_LED_GPIO_Port,USER_LED_Pin);
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -169,7 +174,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
   RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 168;
+  RCC_OscInitStruct.PLL.PLLN = 72;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -183,10 +188,10 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
     Error_Handler();
   }

@@ -6,14 +6,16 @@
 /*********************
  *      INCLUDES
  *********************/
+#include "lvgl.h"
 
 #if LV_BUILD_EXAMPLES
-#include "../../../lvgl_private.h"
-
+#include "./lvgl_private.h"
+//#include "./lv_os_none.h"
+#include "./lv_example_osal.h"
 /*********************
  *      DEFINES
  *********************/
-
+ 
 /**********************
  *      TYPEDEFS
  **********************/
@@ -37,6 +39,7 @@ static lv_thread_t increment_thread;
 /**********************
  *   GLOBAL FUNCTIONS
  **********************/
+#include "lv_example_osal.h"
 
 void lv_example_osal(void)
 {

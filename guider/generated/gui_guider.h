@@ -24,10 +24,11 @@ typedef struct
 	lv_obj_t *screen_label_1;
 	lv_obj_t *screen_sw_1;
 	lv_obj_t *screen_img_1;
-	lv_obj_t *screen_label_2;
 	lv_obj_t *screen_led_1;
 	lv_obj_t *screen_bar_1;
 	lv_obj_t *screen_label_3;
+	lv_obj_t *screen_btn_1;
+	lv_obj_t *screen_btn_1_label;
 }lv_ui;
 
 typedef void (*ui_setup_scr_t)(lv_ui * ui);
@@ -60,6 +61,8 @@ LV_IMAGE_DECLARE(_ha_RGB565A8_116x148);
 
 LV_FONT_DECLARE(lv_font_montserratMedium_18)
 LV_FONT_DECLARE(lv_font_montserratMedium_10)
+LV_FONT_DECLARE(lv_font_montserratMedium_16)
+LV_FONT_DECLARE(lv_font_montserratMedium_12)
 
 
 #ifdef __cplusplus

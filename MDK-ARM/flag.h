@@ -10,6 +10,7 @@
 #include "lv_port_disp.h"        // LVGL的显示支持
 #include "lv_port_indev.h"       // LVGL的触屏支持
 #include "gui_guider.h"
+#include "events_init.h"
 
 
 #ifndef ON

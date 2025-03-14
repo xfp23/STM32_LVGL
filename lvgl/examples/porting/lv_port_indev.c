@@ -220,7 +220,7 @@ static bool touchpad_is_pressed(void)
 static void touchpad_get_xy(int32_t * x, int32_t * y)
 {
     /*Your code comes here*/
-	CTP_mainLoop(&LCD.touch);
+	//CTP_mainLoop(&LCD.touch);
     (*x) = LCD.touch.signal.x1;
     (*y) = LCD.touch.signal.y1;
 }

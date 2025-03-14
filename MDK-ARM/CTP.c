@@ -3,7 +3,6 @@
 #include <stdarg.h>
 #include <string.h>
 
-// static uint8_t CTP_ADDR = 0x70; // 触摸信号iic地址
 
 #ifndef ON
 #define ON (0x01)

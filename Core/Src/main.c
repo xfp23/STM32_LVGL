@@ -104,13 +104,15 @@ lv_init();                             // LVGL 初始化
 lv_port_disp_init();                   // 注册LVGL的显示任务
 lv_port_indev_init();                  // 注册LVGL的触屏检测任务
 // ui_init_style(&guider_ui);
-setup_ui(&guider_ui);
+ setup_ui(&guider_ui);
+ events_init(&guider_ui);
  setup_scr_screen(&guider_ui);
+ events_init_screen(&guider_ui);
 //lv_example_osal();
 //lv_test();
 //lv_example_chart_1();
 //lv_example_osal();
-	 static uint8_t lv_count = 0;
+//	 static uint8_t lv_count = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -131,7 +133,7 @@ setup_ui(&guider_ui);
 	  if(UserTim.bytes.systim_10ms == ON)
 	  {
 		  UserTim.bytes.systim_10ms = OFF;
-		   lv_timer_handler();
+//		   lv_timer_handler();
 		  
 		    CTP_mainLoop(&LCD.touch);
 	  }

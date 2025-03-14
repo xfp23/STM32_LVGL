@@ -1,1 +1,0 @@
-GEN_CSRCS += _ha_RGB565A8_116x148.c

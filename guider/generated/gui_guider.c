@@ -12,8 +12,8 @@
 #include "gui_guider.h"
 #include "widgets_init.h"
 
+lv_ui guider_ui;
 
-lv_ui guider_ui = {0};
 void ui_init_style(lv_style_t * style)
 {
     if (style->prop_cnt > 1)

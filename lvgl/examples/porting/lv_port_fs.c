@@ -9,7 +9,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "lv_port_fs_template.h"
+#include "lv_port.h"
 #include "../../lvgl.h"
 
 /*********************
